@@ -1,43 +1,56 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { tareaStore } from "../../../store/TareaStore";
-import styles from "./listTareas.module.css";
-import { getAllTareas } from "../../../http/Tarea";
+import styles from './ListTareas.module.css'
 import { CardList } from "../CardList/CardList";
+import { Modal } from "../Modal/Modal";
+import { ITarea } from "../../../types/ITareas";
+import { useTareas } from "../../../hooks/useTareas";
 
 export const ListTareas = () => {
-    const tareas = tareaStore((state)=> state.tareas);
-    const setArrayTareas = tareaStore((state)=> state.setArrayTareas);
 
-    const getTareas = async() => {
-        const data = await getAllTareas()
-        if(data) setArrayTareas(data);
-    }
+    const setTareaActiva = tareaStore((state)=>state.setTareaActiva)
+
+    const {getTareas,tareas} = useTareas()
+
 
     useEffect (()=>{
         getTareas();
-    },[])
+    },[]);
+
+    const [OpenModalTarea, setOpenModalTarea] = useState(false);
+
+    const HandleOpenModalEdit = (tarea:ITarea)=>{
+        setTareaActiva(tarea);
+        setOpenModalTarea(true);
+        
+
+    }
+
+    const HandleCloseModal = ()=>{
+        setOpenModalTarea(false)
+    }
 
 
     return (
+        <>
         <div className={styles.containerPrincipalListaTareas}>
             <div className={styles.containerTitleAndButton}>
                 <h2>Lista de tareas</h2>
-                <button>Agregar Tarea</button>
+                <button onClick={()=>{setOpenModalTarea(true)}}>Agregar Tarea</button>
             </div>
             <div className={styles.containerList}>
                 {tareas.length > 0 ?(
-                    tareas.map((el) => <CardList tarea={el}/>)
+                    tareas.map((el) => <CardList 
+                    HandleOpenModalEdit = {HandleOpenModalEdit}
+                    tarea={el}/>)
                 ) : (
                     <div>
                         <h3>No hay Tareas</h3>
                     </div>
                 )}
             </div>
-
-
-
-
-
         </div>
-    )
-}
+        {OpenModalTarea && <Modal HandleCloseModal ={HandleCloseModal}/>}
+        </>
+    );
+};

@@ -1,17 +1,21 @@
+import { useTareas } from '../../../hooks/useTareas';
 import {ITarea} from '../../../types/ITareas';
-import styles from "./CardList.module.css";
+import styles from './CardList.module.css';
 import {FC} from "react";
 
 type ICardList = {
     tarea: ITarea
+    HandleOpenModalEdit: (tarea:ITarea)=>void
 }
 
-export const CardList: FC<ICardList> =  ({tarea}) => {
-    const eliminarTarea = ()=>{
-        console.log("eliminar",tarea)
+export const CardList: FC<ICardList> =  ({tarea,HandleOpenModalEdit}) => {
+    
+    const{eliminarTarea} = useTareas()
+    const eliminarTareaById = ()=>{
+        eliminarTarea(tarea.id!);
     }
     const editarTarea = ()=>{
-        console.log("editar", tarea)
+        HandleOpenModalEdit(tarea);
     }
 
 
@@ -23,7 +27,7 @@ return (
         <p><b>Fecha limite: {tarea.fechaLimite}</b></p>
         </div>
         <div className={styles.actionCard}>
-            <button onClick={eliminarTarea}>Eliminar</button>
+            <button onClick={eliminarTareaById}>Eliminar</button>
             <button onClick={editarTarea}>Editar</button>
         </div>
     </div>
